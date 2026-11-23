@@ -27,7 +27,7 @@ const formItem = [
         label: '文章分类',
         placeholder: '请选择分类',
         options: [{
-            label: '心里健康基础',
+            label: '心理健康基础',
             value: '1'
         },
         {
@@ -37,7 +37,7 @@ const formItem = [
     }
     ,
 ]
-const handleSearch = (data) => {
-    console.log(data)
+const handleSearch = (formData) => {
+    console.log(formData)
 }
 </script>
