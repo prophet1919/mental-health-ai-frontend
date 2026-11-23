@@ -1,6 +1,8 @@
 <template>
-    <el-aside width="264px">
+    <el-aside :width="isCollapse ? '64px' : '264px'">
         <el-menu
+        :collapse="isCollapse"
+        :collapse-transition="false"
         default-active="2"
         @open="handleOpen"
         @close="handleClose"
@@ -8,13 +10,13 @@
       >
             <div class="brand">
                 <el-image style="width: 50px; height: 50px; margin-right: 10px" :src="iconUrl" alt="logo" />
-                <div class="info-card">
+                <div v-show="!isCollapse" class="info-card">
                     <h1 class="brand-title">心理健康AI助手</h1>
                     <p class="brand-subtitle">管理后台</p>
                 </div>
             </div>
 
-            <el-menu-item v-for="item in router.options.routes[0].children" :key="item.path" :index="item.path">
+            <el-menu-item @click="selectMenu" v-for="item in router.options.routes[0].children" :key="item.path" :index="item.path">
                 <el-icon><component :is="item.meta.icon" /></el-icon>
                 <span>{{item.meta.title}}</span>
             </el-menu-item>
@@ -23,12 +25,21 @@
 </template>
 
 <script setup>
-import {useRouter} from 'vue-router'
+import { useRouter } from 'vue-router'
+import { useAdminStore } from '@/stores/admin'
+import { computed } from 'vue'
+
 const router = useRouter()
 
 const iconUrl = new URL('@/assets/images/机器人.png', import.meta.url).href
 
-console.log(router, 'router')
+const isCollapse = computed(() => useAdminStore().isCollapse)
+
+const selectMenu = (key) => {
+  router.push(key)
+  const currentRoute = router.options.routes[0]
+  router.push(`${currentRoute.path}/${key.index}`)
+}
 
 const handleOpen = (key) => {
   console.log(key)
