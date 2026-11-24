@@ -16,7 +16,7 @@
                 </div>
             </div>
 
-            <el-menu-item @click="selectMenu" v-for="item in router.options.routes[0].children" :key="item.path" :index="item.path">
+            <el-menu-item @click="selectMenu" v-for="item in menuItems" :key="item.path" :index="item.path">
                 <el-icon><component :is="item.meta.icon" /></el-icon>
                 <span>{{item.meta.title}}</span>
             </el-menu-item>
@@ -35,10 +35,14 @@ const iconUrl = new URL('@/assets/images/机器人.png', import.meta.url).href
 
 const isCollapse = computed(() => useAdminStore().isCollapse)
 
+// 后台菜单：排除 hidden 路由（如会话详情）与重定向项
+const menuItems = computed(() => {
+    const backend = router.options.routes.find((r) => r.path === '/back')
+    return (backend?.children || []).filter((item) => !item.meta?.hidden)
+})
+
 const selectMenu = (key) => {
-  router.push(key)
-  const currentRoute = router.options.routes[0]
-  router.push(`${currentRoute.path}/${key.index}`)
+    router.push(`/back/${key.index}`)
 }
 
 const handleOpen = (key) => {

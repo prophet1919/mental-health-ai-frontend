@@ -1,22 +1,22 @@
-
 <template>
     <div class="navbar">
         <div class="flex-box">
             <el-button @click="handleCollapse">
                 <el-icon><Expand /></el-icon>
             </el-button>
-            <p class="page-title">导航栏</p>
+            <p class="page-title">{{ currentTitle }}</p>
         </div>
         <div class="flex-box">
             <el-dropdown @command="handleCommand">
                 <div class="flex-box">
-                    <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
-                    <p class="user-name">admin</p>
+                    <el-avatar :size="32">{{ (auth.displayName || 'A').slice(0, 1) }}</el-avatar>
+                    <p class="user-name">{{ auth.displayName }}</p>
                     <el-icon><ArrowDown /></el-icon>
                 </div>
                 <template #dropdown>
                     <el-dropdown-menu>
-                        <el-dropdown-item command="logout">退出登录</el-dropdown-item>
+                        <el-dropdown-item command="chat">返回对话</el-dropdown-item>
+                        <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
@@ -25,14 +25,26 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAdminStore } from '@/stores/admin'
+import { useAuthStore } from '@/stores/auth'
+
+const route = useRoute()
+const router = useRouter()
+const auth = useAuthStore()
+
+const currentTitle = computed(() => route.meta?.title || '管理后台')
 
 const handleCommand = (command) => {
     if (command === 'logout') {
-        // 处理退出登录逻辑
+        auth.clear()
+        router.replace('/login')
+        return
     }
-    console.log(command)
+    if (command === 'chat') {
+        router.push('/chat')
+    }
 }
 
 const handleCollapse = () => {
@@ -40,26 +52,33 @@ const handleCollapse = () => {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .navbar {
-    height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 15px;
-    background: white;
-    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-    border-bottom: 1px solid #e5e7eb;
+    height: 100%;
+    padding: 0 20px;
+    background: #fff;
+    border-bottom: 1px solid #eef1f5;
+
     .flex-box {
         display: flex;
         align-items: center;
-        justify-content: center;
+        gap: 10px;
     }
+
     .page-title {
-        font-size: 26px;
-        font-weight: bold;
-        margin-left: 20px;
+        font-size: 15px;
+        font-weight: 500;
         color: #1f2937;
+        margin: 0;
+    }
+
+    .user-name {
+        font-size: 13px;
+        color: #374151;
+        margin: 0;
     }
 }
 </style>
